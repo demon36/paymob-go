@@ -34,7 +34,7 @@ type PaymentKeyRequest struct {
 	AuthToken       string      `json:"auth_token"`
 	AmountCents     uint        `json:"amount_cents"`
 	ExpirationMS    uint        `json:"expiration"`
-	OrderID         string      `json:"order_id"`
+	OrderID         int         `json:"order_id"`
 	Currency        string      `json:"currency"`
 	IntegrationID   string      `json:"integration_id"`
 	UserBillingData BillingData `json:"billing_data"`

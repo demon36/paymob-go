@@ -14,7 +14,7 @@ import (
 )
 
 //returns a token valid for 1 hour
-func AuthenticatePayment(APIKey string) (string, error) {
+func Authenticate(APIKey string) (string, error) {
 	tokenReqData := map[string]string{"api_key": APIKey}
 	jsonData, _ := json.Marshal(tokenReqData)
 
@@ -42,7 +42,7 @@ func AuthenticatePayment(APIKey string) (string, error) {
 }
 
 //return thirdparty order identifier
-func RegisterOrder(authToken string, items []Item, totalPriceInCents uint) (string, error) {
+func RegisterOrder(authToken string, items []Item, totalPriceInCents uint) (int, error) {
 	orderRegistrationReq := OrderRegistrationRequest{
 		AuthToken:      authToken,
 		DeliveryNeeded: false,
@@ -60,20 +60,20 @@ func RegisterOrder(authToken string, items []Item, totalPriceInCents uint) (stri
 	var res map[string]interface{}
 	err := json.NewDecoder(resp.Body).Decode(&res)
 	if err != nil {
-		return "", err
+		return 0, err
 	}
 
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		panic(fmt.Sprintf("weaccept returned status %v, resp %v", resp.Status, res))
+		return 0, fmt.Errorf("weaccept returned status %v, resp %v", resp.Status, res)
 	}
 
-	return fmt.Sprintf("%v", uint(res["id"].(float64))), nil
+	return res["id"].(int), nil
 }
 
-func RequestPaymentKey(authToken string, paymentIntegrationId string, orderId string, totalPriceInCents uint, firstName string, lastName string, email string, phone string) (string, error) {
+func RequestPaymentKey(authToken string, paymentIntegrationId string, orderId int, amountCents uint, firstName string, lastName string, email string, phone string) (string, error) {
 	paymentKeyReqData := PaymentKeyRequest{
 		AuthToken:    authToken,
-		AmountCents:  totalPriceInCents,
+		AmountCents:  amountCents,
 		ExpirationMS: 600000,
 		OrderID:      orderId,
 		UserBillingData: BillingData{
@@ -106,10 +106,15 @@ func RequestPaymentKey(authToken string, paymentIntegrationId string, orderId st
 	var res map[string]interface{}
 	json.NewDecoder(resp.Body).Decode(&res)
 	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
-		panic(fmt.Sprintf("weaccept returned status %v, resp %v", resp.Status, res))
+		return "", fmt.Errorf("weaccept returned status %v, resp %v", resp.Status, res)
 	}
 
 	return res["token"].(string), nil
+}
+
+func GenerateIFrameURL(iframeId string, paymentKey string) string {
+	return fmt.Sprintf("https://accept.paymobsolutions.com/api/acceptance/iframes/%s?payment_token=%s",
+		iframeId, paymentKey)
 }
 
 func ConcatTransactionResponseValues(v *url.Values) string {
