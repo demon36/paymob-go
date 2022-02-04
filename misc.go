@@ -7,7 +7,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -67,7 +66,7 @@ func RegisterOrder(authToken string, items []Item, totalPriceInCents uint) (int,
 		return 0, fmt.Errorf("weaccept returned status %v, resp %v", resp.Status, res)
 	}
 
-	return res["id"].(int), nil
+	return int(res["id"].(float64)), nil
 }
 
 func RequestPaymentKey(authToken string, paymentIntegrationId string, orderId int, amountCents uint, firstName string, lastName string, email string, phone string) (string, error) {
@@ -174,7 +173,5 @@ func ValidateHMAC(message string, expectedHMAC string, key string) bool {
 	mac.Write([]byte(message))
 	calculatedHMAC := mac.Sum(nil)
 	expectedHMACBytes, _ := hex.DecodeString(expectedHMAC)
-	log.Printf("calculatedHMAC: %x", calculatedHMAC)
-	log.Printf("expectedHMAC: %x", expectedHMACBytes)
 	return hmac.Equal(expectedHMACBytes, calculatedHMAC)
 }
