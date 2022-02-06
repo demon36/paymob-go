@@ -40,31 +40,56 @@ type PaymentKeyRequest struct {
 	UserBillingData BillingData `json:"billing_data"`
 }
 
+//for post-payment redirection
+type TransactionResponseRequest struct {
+	Id                   uint   `schema:"id"`
+	Pending              bool   `schema:"pending"`
+	AmountCents          uint   `schema:"amount_cents"`
+	Success              bool   `schema:"success"`
+	IsAuth               bool   `schema:"is_auth"`
+	IsCapture            bool   `schema:"is_capture"`
+	IsStandalonePayment  bool   `schema:"is_standalone_payment"`
+	IsVoided             bool   `schema:"is_voided"`
+	IsRefunded           bool   `schema:"is_refunded"`
+	Is3dSecure           bool   `schema:"is_3d_secure"`
+	IntegrationId        uint   `schema:"integration_id"`
+	HasParentTransaction bool   `schema:"has_parent_transaction"`
+	OrderId              uint   `schema:"order"`
+	CreatedAt            string `schema:"created_at"`
+	Currency             string `schema:"currency"`
+	SourceDataPan        string `schema:"source_data.pan"`
+	SourceDataType       string `schema:"source_data.type"`
+	SourceDataSubType    string `schema:"source_data.sub_type"`
+	ErrorCccured         bool   `schema:"error_occured"`
+	Owner                string `schema:"owner"`
+}
+
+//for back-end direct callback
 type TransactionProcessedRequest struct {
 	Obj struct {
-		Id                     uint `json:"id"`
-		Pending                bool `json:"pending"`
-		Amount_cents           uint `json:"amount_cents"`
-		Success                bool `json:"success"`
-		Is_auth                bool `json:"is_auth"`
-		Is_capture             bool `json:"is_capture"`
-		Is_standalone_payment  bool `json:"is_standalone_payment"`
-		Is_voided              bool `json:"is_voided"`
-		Is_refunded            bool `json:"is_refunded"`
-		Is_3d_secure           bool `json:"is_3d_secure"`
-		Integration_id         uint `json:"integration_id"`
-		Has_parent_transaction bool `json:"has_parent_transaction"`
-		Order                  struct {
+		Id                   uint `json:"id"`
+		Pending              bool `json:"pending"`
+		AmountCents          uint `json:"amount_cents"`
+		Success              bool `json:"success"`
+		IsAuth               bool `json:"is_auth"`
+		IsCapture            bool `json:"is_capture"`
+		IsStandalonePayment  bool `json:"is_standalone_payment"`
+		IsVoided             bool `json:"is_voided"`
+		IsRefunded           bool `json:"is_refunded"`
+		Is3dSecure           bool `json:"is_3d_secure"`
+		IntegrationId        uint `json:"integration_id"`
+		HasParentTransaction bool `json:"has_parent_transaction"`
+		Order                struct {
 			Id uint `json:"id"`
 		} `json:"order"`
-		Created_at  string `json:"created_at"`
-		Currency    string `json:"currency"`
-		Source_data struct {
-			Pan      string `json:"pan"`
-			Type_    string `json:"type"`
-			Sub_type string `json:"sub_type"`
+		CreatedAt  string `json:"created_at"`
+		Currency   string `json:"currency"`
+		SourceData struct {
+			Pan     string `json:"pan"`
+			Type_   string `json:"type"`
+			SubType string `json:"sub_type"`
 		} `json:"source_data"`
-		Error_occured bool `json:"error_occured"`
-		Owner         uint `json:"owner"`
+		ErrorOccured bool `json:"error_occured"`
+		Owner        uint `json:"owner"`
 	} `json:"obj"`
 }

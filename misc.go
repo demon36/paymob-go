@@ -8,8 +8,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
+
+	"github.com/gorilla/schema"
 )
 
 //returns a token valid for 1 hour
@@ -116,27 +117,35 @@ func GenerateIFrameURL(iframeId string, paymentKey string) string {
 		iframeId, paymentKey)
 }
 
-func ConcatTransactionResponseValues(v *url.Values) string {
-	return v.Get("amount_cents") +
-		v.Get("created_at") +
-		v.Get("currency") +
-		v.Get("error_occured") +
-		v.Get("has_parent_transaction") +
-		v.Get("id") +
-		v.Get("integration_id") +
-		v.Get("is_3d_secure") +
-		v.Get("is_auth") +
-		v.Get("is_capture") +
-		v.Get("is_refunded") +
-		v.Get("is_standalone_payment") +
-		v.Get("is_voided") +
-		v.Get("order") +
-		v.Get("owner") +
-		v.Get("pending") +
-		v.Get("source_data.pan") +
-		v.Get("source_data.sub_type") +
-		v.Get("source_data.type") +
-		v.Get("success")
+var decoder = schema.NewDecoder()
+
+func makeTransactionResponseRequest(params *map[string][]string) TransactionResponseRequest {
+	var r TransactionResponseRequest
+	decoder.Decode(&r, *params)
+	return r
+}
+
+func ConcatTransactionResponseValues(r *TransactionResponseRequest) string {
+	return uitoa(r.AmountCents) +
+		r.CreatedAt +
+		r.Currency +
+		strconv.FormatBool(r.ErrorCccured) +
+		strconv.FormatBool(r.HasParentTransaction) +
+		uitoa(r.Id) +
+		uitoa(r.IntegrationId) +
+		strconv.FormatBool(r.Is3dSecure) +
+		strconv.FormatBool(r.IsAuth) +
+		strconv.FormatBool(r.IsCapture) +
+		strconv.FormatBool(r.IsRefunded) +
+		strconv.FormatBool(r.IsStandalonePayment) +
+		strconv.FormatBool(r.IsVoided) +
+		uitoa(r.OrderId) +
+		r.Owner +
+		strconv.FormatBool(r.Pending) +
+		r.SourceDataPan +
+		r.SourceDataSubType +
+		r.SourceDataType +
+		strconv.FormatBool(r.Success)
 }
 
 func uitoa(u uint) string {
@@ -145,25 +154,25 @@ func uitoa(u uint) string {
 
 func ConcatTransactionProcessedValues(c *TransactionProcessedRequest) string {
 	neededValues :=
-		uitoa(c.Obj.Amount_cents) +
-			c.Obj.Created_at +
+		uitoa(c.Obj.AmountCents) +
+			c.Obj.CreatedAt +
 			c.Obj.Currency +
-			strconv.FormatBool(c.Obj.Error_occured) +
-			strconv.FormatBool(c.Obj.Has_parent_transaction) +
+			strconv.FormatBool(c.Obj.ErrorOccured) +
+			strconv.FormatBool(c.Obj.HasParentTransaction) +
 			uitoa(c.Obj.Id) +
-			uitoa(c.Obj.Integration_id) +
-			strconv.FormatBool(c.Obj.Is_3d_secure) +
-			strconv.FormatBool(c.Obj.Is_auth) +
-			strconv.FormatBool(c.Obj.Is_capture) +
-			strconv.FormatBool(c.Obj.Is_refunded) +
-			strconv.FormatBool(c.Obj.Is_standalone_payment) +
-			strconv.FormatBool(c.Obj.Is_voided) +
+			uitoa(c.Obj.IntegrationId) +
+			strconv.FormatBool(c.Obj.Is3dSecure) +
+			strconv.FormatBool(c.Obj.IsAuth) +
+			strconv.FormatBool(c.Obj.IsCapture) +
+			strconv.FormatBool(c.Obj.IsRefunded) +
+			strconv.FormatBool(c.Obj.IsStandalonePayment) +
+			strconv.FormatBool(c.Obj.IsVoided) +
 			uitoa(c.Obj.Order.Id) +
 			uitoa(c.Obj.Owner) +
 			strconv.FormatBool(c.Obj.Pending) +
-			c.Obj.Source_data.Pan +
-			c.Obj.Source_data.Sub_type +
-			c.Obj.Source_data.Type_ +
+			c.Obj.SourceData.Pan +
+			c.Obj.SourceData.SubType +
+			c.Obj.SourceData.Type_ +
 			strconv.FormatBool(c.Obj.Success)
 	return neededValues
 }
