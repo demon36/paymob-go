@@ -119,7 +119,7 @@ func GenerateIFrameURL(iframeId string, paymentKey string) string {
 
 var decoder = schema.NewDecoder()
 
-func makeTransactionResponseRequest(params *map[string][]string) TransactionResponseRequest {
+func MakeTransactionResponseRequest(params *map[string][]string) TransactionResponseRequest {
 	var r TransactionResponseRequest
 	decoder.Decode(&r, *params)
 	return r
