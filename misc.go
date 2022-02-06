@@ -69,11 +69,11 @@ func RegisterOrder(authToken string, items []Item, totalPriceInCents uint) (int,
 	return int(res["id"].(float64)), nil
 }
 
-func RequestPaymentKey(authToken string, paymentIntegrationId string, orderId int, amountCents uint, firstName string, lastName string, email string, phone string) (string, error) {
+func RequestPaymentKey(authToken string, paymentIntegrationId string, orderId int, amountCents uint, firstName string, lastName string, email string, phone string, expirationSec uint) (string, error) {
 	paymentKeyReqData := PaymentKeyRequest{
 		AuthToken:    authToken,
 		AmountCents:  amountCents,
-		ExpirationMS: 600000,
+		ExpirationMS: expirationSec,
 		OrderID:      orderId,
 		UserBillingData: BillingData{
 			FirstName:      firstName,
