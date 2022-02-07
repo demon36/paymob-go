@@ -40,6 +40,7 @@ type PaymentKeyRequest struct {
 	UserBillingData BillingData `json:"billing_data"`
 }
 
+//TODO: find a way to merge these two structs
 //for post-payment redirection
 type TransactionResponseRequest struct {
 	Id                   uint   `schema:"id"`
@@ -57,9 +58,11 @@ type TransactionResponseRequest struct {
 	OrderId              uint   `schema:"order"`
 	CreatedAt            string `schema:"created_at"`
 	Currency             string `schema:"currency"`
-	SourceDataPan        string `schema:"source_data.pan"`
-	SourceDataType       string `schema:"source_data.type"`
-	SourceDataSubType    string `schema:"source_data.sub_type"`
+	SourceData struct {
+		Pan        string `schema:"pan"`
+		Type       string `schema:"type"`
+		SubType    string `schema:"sub_type"`
+	} `schema:"source_data"`
 	ErrorCccured         bool   `schema:"error_occured"`
 	Owner                string `schema:"owner"`
 }

@@ -142,9 +142,9 @@ func ConcatTransactionResponseValues(r *TransactionResponseRequest) string {
 		uitoa(r.OrderId) +
 		r.Owner +
 		strconv.FormatBool(r.Pending) +
-		r.SourceDataPan +
-		r.SourceDataSubType +
-		r.SourceDataType +
+		r.SourceData.Pan +
+		r.SourceData.SubType +
+		r.SourceData.Type +
 		strconv.FormatBool(r.Success)
 }
 
