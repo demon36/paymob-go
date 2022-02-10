@@ -6,6 +6,7 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -110,6 +111,37 @@ func RequestPaymentKey(authToken string, paymentIntegrationId string, orderId in
 	}
 
 	return res["token"].(string), nil
+}
+
+func RequestRefund(authToken string, transactionId uint, amountCents uint) (uint, error) {
+	refundReq := RefundRequest{
+		AuthToken:     authToken,
+		TransactionId: transactionId,
+		AmountCents:   amountCents,
+	}
+	jsonData, _ := json.Marshal(refundReq)
+	rawResp, _ := http.Post(
+		"https://accept.paymob.com/api/acceptance/void_refund/refund",
+		"application/json",
+		bytes.NewBuffer(jsonData),
+	)
+
+	var resp TransactionProcessedRequest
+	err := json.NewDecoder(rawResp.Body).Decode(&resp)
+	if err != nil {
+		return 0, err
+	}
+
+	if rawResp.StatusCode != http.StatusOK && rawResp.StatusCode != http.StatusCreated {
+		return 0, fmt.Errorf("weaccept returned status: %v, body: %v", rawResp.Status, rawResp.Body)
+	}
+
+	if resp.Obj.Success {
+		return resp.Obj.Id, nil
+	} else {
+		return 0, errors.New("weaccept resp.ErrorOccured = true")
+	}
+
 }
 
 func GenerateIFrameURL(iframeId string, paymentKey string) string {

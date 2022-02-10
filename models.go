@@ -58,13 +58,13 @@ type TransactionResponseRequest struct {
 	OrderId              uint   `schema:"order"`
 	CreatedAt            string `schema:"created_at"`
 	Currency             string `schema:"currency"`
-	SourceData struct {
-		Pan        string `schema:"pan"`
-		Type       string `schema:"type"`
-		SubType    string `schema:"sub_type"`
+	SourceData           struct {
+		Pan     string `schema:"pan"`
+		Type    string `schema:"type"`
+		SubType string `schema:"sub_type"`
 	} `schema:"source_data"`
-	ErrorCccured         bool   `schema:"error_occured"`
-	Owner                string `schema:"owner"`
+	ErrorCccured bool   `schema:"error_occured"`
+	Owner        string `schema:"owner"`
 }
 
 //for back-end direct callback
@@ -95,4 +95,10 @@ type TransactionProcessedRequest struct {
 		ErrorOccured bool `json:"error_occured"`
 		Owner        uint `json:"owner"`
 	} `json:"obj"`
+}
+
+type RefundRequest struct {
+	AuthToken     string `json:"auth_token"`
+	TransactionId uint   `json:"transaction_id"`
+	AmountCents   uint   `json:"amount_cents"`
 }
